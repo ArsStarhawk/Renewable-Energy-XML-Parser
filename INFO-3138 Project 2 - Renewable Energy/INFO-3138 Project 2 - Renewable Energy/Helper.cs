@@ -12,7 +12,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
         public static char PrintMainMenu()
         {
             Console.WriteLine("\n\n");
-            String title = "Renewable Energy Production in 2016";
+            string title = "Renewable Energy Production in 2016";
             Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
 
             DrawDivider();
@@ -34,7 +34,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                 userInput = Console.ReadLine();
                 if (userInput.Length == 1)
-                    selection = Char.Parse(userInput.ToUpper());
+                    selection = char.Parse(userInput.ToUpper());
 
 
             } while (userInput.Length != 1 || !"CRPX".Contains(selection));
@@ -81,7 +81,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 }
 
                 bool validInput;
-                var selection = 0;
+                int selection;
                 do
                 {
                     Console.WriteLine("Select a country by number:");
@@ -89,12 +89,13 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                     var userInput = Console.ReadLine();
 
-                    validInput = Int32.TryParse(userInput, out selection);
+                    validInput = int.TryParse(userInput, out selection);
 
                 } while (!validInput || !(selection > 0 && selection <= countryCount));
 
-                country = allCountries[selection - 1].Attributes[0].InnerText;
-
+                var xmlAttributeCollection = allCountries[selection - 1].Attributes;
+                if (xmlAttributeCollection != null)
+                    country = xmlAttributeCollection[0].InnerText;
             }//try
             catch (XmlException ex)
             {
@@ -129,12 +130,12 @@ namespace INFO_3138_Project_2___Renewable_Energy
                     map.Add(2, "n/a");
                     map.Add(3, "n/a");
 
-                    for (int j = 0; j < renewables[i].Attributes.Count; j++)
+                    for (var j = 0; j < renewables[i].Attributes.Count; j++)
                     {
                         map[j] = renewables[i].Attributes[j].InnerText;
                     }
 
-                    if (Int32.TryParse(map[1], out var tmp))
+                    if (int.TryParse(map[1], out var tmp))
                     {
                         map[1] = tmp.ToString("N0");
                     }
