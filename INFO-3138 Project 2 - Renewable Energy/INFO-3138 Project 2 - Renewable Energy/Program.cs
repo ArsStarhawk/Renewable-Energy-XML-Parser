@@ -38,11 +38,11 @@ namespace INFO_3138_Project_2___Renewable_Energy
             {
                 case 'C': 
                     Helper.ReportOnCountry(Helper.PrintCountryMenu(document), document);
-                    
-                    
                     break;
 
-
+                case 'R':
+                    Helper.ReportOnEnergyType(document);
+                    break;
             }
         }
     }

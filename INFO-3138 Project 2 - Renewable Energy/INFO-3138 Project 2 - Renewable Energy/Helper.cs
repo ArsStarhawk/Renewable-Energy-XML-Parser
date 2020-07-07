@@ -55,6 +55,13 @@ namespace INFO_3138_Project_2___Renewable_Energy
             Console.WriteLine("+");
         }
 
+        /// <summary>
+        /// Prints the country menu.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        /// <returns>
+        /// System.String - The country the user selected from the menu
+        /// </returns>
         public static string PrintCountryMenu(XmlDocument doc)
         {
 
@@ -109,6 +116,11 @@ namespace INFO_3138_Project_2___Renewable_Energy
             return country;
         }
 
+        /// <summary>
+        /// Reports the on country.
+        /// </summary>
+        /// <param name="country">The country.</param>
+        /// <param name="doc">The document.</param>
         public static void ReportOnCountry(string country, XmlDocument doc)
         {
             Console.WriteLine($"\n\nRenewable Energy Production in {country}");
@@ -155,6 +167,20 @@ namespace INFO_3138_Project_2___Renewable_Energy
             catch (Exception ex)
             {
                 Console.WriteLine($"GENERAL ERROR: {ex.Message}");
+            }
+        }
+
+        public static void ReportOnEnergyType(XmlDocument doc)
+        {
+
+            XmlElement rootElement = (XmlElement)doc.DocumentElement;
+            XmlNodeList types = rootElement.SelectNodes("//country[1]/renewable/@type");
+
+            Console.WriteLine("\n\nSelect a renewable by number as shown below...\n");
+
+            for (int i = 0; i < types.Count; i++)
+            {
+                Console.WriteLine($"{i+1}. {types[i].InnerText}");
             }
         }
     }
