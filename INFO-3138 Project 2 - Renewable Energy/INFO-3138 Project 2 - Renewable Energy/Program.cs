@@ -43,6 +43,14 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 case 'R':
                     Helper.ReportOnEnergyType(document);
                     break;
+
+                case 'P':
+                    Helper.ReportOnPercent(document);
+                    break;
+
+                case 'X':
+                    //todo: break out (yet to be added) program run loop
+                break;
             }
         }
     }

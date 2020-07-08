@@ -8,16 +8,18 @@ namespace INFO_3138_Project_2___Renewable_Energy
 {
     abstract class Helper
     {
-
+        /// <summary>
+        /// Prints the main menu.
+        /// </summary>
+        /// <returns>
+        /// System.Char - the selected menu item
+        /// </returns>
         public static char PrintMainMenu()
         {
             Console.WriteLine("\n\n");
             string title = "Renewable Energy Production in 2016";
             Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
-
             DrawDivider();
-
-
 
             string userInput;
             char selection = 'X';
@@ -108,6 +110,10 @@ namespace INFO_3138_Project_2___Renewable_Energy
             {
                 Console.WriteLine($"DOM ERROR: {ex.Message}");
             }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"XPath ERROR: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"GENERAL ERROR: {ex.Message}");
@@ -170,96 +176,187 @@ namespace INFO_3138_Project_2___Renewable_Energy
             }
         }
 
+        /// <summary>
+        /// Report based on specific energy type.
+        /// </summary>
+        /// <param name="doc">The document.</param>
         public static void ReportOnEnergyType(XmlDocument doc)
         {
+            try
+            {
+                XmlElement rootElement = (XmlElement)doc.DocumentElement;
+                XmlNodeList types = rootElement.SelectNodes("//country[1]/renewable/@type");
+                XmlNodeList allCountries = rootElement.SelectNodes("//country");
 
-            XmlElement rootElement = (XmlElement)doc.DocumentElement;
-            XmlNodeList types = rootElement.SelectNodes("//country[1]/renewable/@type");
-            XmlNodeList allCountries = rootElement.SelectNodes("//country");
+                string userInput;
+                int selection;
+                bool validInput;
 
-            string userInput;
-            int selection;
-            bool validInput;
+                do
+                {
+                    Console.WriteLine("\n\nSelect a renewable by number as shown below...\n");
+
+                    for (int i = 0; i < types.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {types[i].InnerText}");
+                    }
+
+                    Console.Write("\n  > ");
+
+                    userInput = Console.ReadLine();
+                    validInput = int.TryParse(userInput, out selection);
+
+                } while (!validInput || !(selection > 0 && selection <= types.Count));
+
+                string selectedType = types[selection - 1].InnerText;
+                XmlNodeList selectedRenewables = rootElement.SelectNodes($"//country/renewable[contains(@type, '{selectedType}')]");
+
+                int padding = 32;
+                string title = $"{char.ToUpper(selectedType[0]) + selectedType.Substring(1)} Energy Production\n\n\n";
+                Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
+                Console.Write("Country".PadLeft(padding));
+                Console.Write("Amount (Gwh)".PadLeft(padding));
+                Console.Write("% of Total".PadLeft(padding));
+                Console.Write("% of Renewables\n".PadLeft(padding));
+                DrawDivider();
+                Console.WriteLine();
+
+                for (int i = 0; i < selectedRenewables.Count; i++)
+                {
+
+                    var attrList = new List<string> { "n/a", "n/a", "n/a" };
+
+                    Console.Write(allCountries[i].Attributes[0].InnerText.PadLeft(padding));
+
+                    for (int j = 0; j < selectedRenewables[i].Attributes.Count; j++)
+                    {
+                        switch (selectedRenewables[i].Attributes[j].Name)
+                        {
+                            case "amount":
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpAmount))
+                                {
+                                    attrList[0] = tmpAmount.ToString("#,0.##");
+                                }
+                                break;
+
+                            case "percent-of-all":
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfAll))
+                                {
+                                    attrList[1] = tmpOfAll.ToString("#,0.##");
+                                }
+                                break;
+
+                            case "percent-of-renewables":
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfRenew))
+                                {
+                                    attrList[2] = tmpOfRenew.ToString("#,0.##");
+                                }
+                                break;
+                        }
+                    }
+
+                    foreach (var attr in attrList)
+                    {
+                        Console.Write(attr.PadLeft(padding));
+                    }
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine($"\n\n{allCountries.Count} match(es) found\n");
+            }
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"DOM ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"XPath ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GENERAL ERROR: {ex.Message}");
+            }
+        }//reportOnEnergyType
+
+
+        /// <summary>
+        /// Reports based on percentage of renewable energy.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        public static void ReportOnPercent(XmlDocument doc)
+        {
+
+            const double MIN_PERCENT = 0.0, MAX_PERCENT = 100;
+            double userMin = 0.0, userMax = 0.0;
+            bool isValid = false;
+
 
             do
             {
-                Console.WriteLine("\n\nSelect a renewable by number as shown below...\n");
+                Console.Write("\nEnter the minimum % of renewable produced or press enter for no minimum: > ");
+                var tmpStr = Console.ReadLine();
 
-                for (int i = 0; i < types.Count; i++)
+                if (string.IsNullOrEmpty(tmpStr))
                 {
-                    Console.WriteLine($"{i + 1}. {types[i].InnerText}");
+                    userMin = 0.0;
+                }
+                else
+                {
+                    if ((double.TryParse(tmpStr, out var tmpDblResult)) && tmpDblResult >= 0.0 )
+                    {
+                        userMin = tmpDblResult;
+                    }
+                    else continue;
                 }
 
-                Console.Write("\n  > ");
+                Console.Write("\nEnter the maximum % of renewable produced or press enter for no maximum: > ");
+                tmpStr = Console.ReadLine();
 
-                userInput = Console.ReadLine();
-                validInput = int.TryParse(userInput, out selection);
+                if (string.IsNullOrEmpty(tmpStr))
+                {
+                    userMax = 100.0;
+                }
+                else
+                {
+                    if ((double.TryParse(tmpStr, out var tmpDblResult)) && tmpDblResult <= 100.0)
+                    {
+                        userMax = tmpDblResult;
+                    }
+                    else continue;
+                }
 
-            } while (!validInput || !(selection > 0 && selection <= types.Count));
+                if (userMin <= userMax)
+                {
+                    isValid = true;
+                }
 
+            } while (!isValid);
 
-            string selectedType = types[selection - 1].InnerText;
-            XmlNodeList selectedRenewables = rootElement.SelectNodes($"//country/renewable[contains(@type, '{selectedType}')]");
+            Console.WriteLine("\n");
 
-
-            int padding = 32;
-            string title = $"{char.ToUpper(selectedType[0]) + selectedType.Substring(1)} Energy Production\n\n\n";
-            Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
-            Console.Write("Country".PadLeft(padding));
-            Console.Write("Amount (Gwh)".PadLeft(padding));
-            Console.Write("% of Total".PadLeft(padding));
-            Console.Write("% of Renewables\n".PadLeft(padding));
-            DrawDivider();
-            Console.WriteLine();
-
-            for (int i = 0; i < selectedRenewables.Count; i++)
+            try
             {
 
-                var attrList = new List<string> {"n/a", "n/a", "n/a"};
+                Console.WriteLine($"User min is: {userMin} and user max is: {userMax}");
 
-                Console.Write(allCountries[i].Attributes[0].InnerText.PadLeft(padding));
 
-                for (int j = 0; j < selectedRenewables[i].Attributes.Count; j++)
-                {
-                    switch (selectedRenewables[i].Attributes[j].Name)
-                    {
-                        case "amount":
-                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpAmount))
-                            {
-                                attrList[0] = tmpAmount.ToString("#,0.##");
-                            }
-                            break;
 
-                        case "percent-of-all":
-                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfAll))
-                            {
-                                attrList[1] = tmpOfAll.ToString("#,0.##");
-                            }
-                            break;
 
-                        case "percent-of-renewables":
-                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfRenew))
-                            {
-                                attrList[2] = tmpOfRenew.ToString("#,0.##");
-                            }
-                            break;
-                    }
-                }
 
-                foreach (var attr in attrList)
-                {
-                    Console.Write(attr.PadLeft(padding)); 
-                }
 
-                Console.WriteLine();
             }
-
-
-
-
-
-
-
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"DOM ERROR: {ex.Message}");
+            }
+            catch (XPathException ex)
+            {
+                Console.WriteLine($"XPath ERROR: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GENERAL ERROR: {ex.Message}");
+            }
 
 
 
