@@ -331,15 +331,36 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 }
 
             } while (!isValid);
-
             Console.WriteLine("\n");
+
+            string searchType;
+            if (userMin > 0.0 && userMax == 100.0)
+            {
+                searchType = $"at least {userMin}%";
+            }
+            else if (userMin == 0.0 && userMax < 100.0)
+            {
+                searchType = $"up to {userMax}%";
+            }
+            else
+            {
+                searchType = $"{userMin}% to {userMax}%";
+            }
+
+            if (userMin == 0.0 && userMax == 100.0)
+            {
+                Console.WriteLine("Combined Renewables for all countries");
+            }
+            else
+            {
+                Console.WriteLine($"Countries where renewables account for {searchType} of energy production");
+            }
+            DrawDivider();
 
             try
             {
 
-                Console.WriteLine($"User min is: {userMin} and user max is: {userMax}");
-
-
+                //todo: report country information
 
 
 
