@@ -4,6 +4,13 @@ using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 
+/*
+ * Author:  James Kidd
+ * Date:    July 8, 2020
+ * Purpose: Helper methods for renewable energy reporting app.
+ */
+
+
 namespace INFO_3138_Project_2___Renewable_Energy
 {
     abstract class Helper
@@ -17,7 +24,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
         public static char PrintMainMenu()
         {
             Console.WriteLine("\n\n");
-            string title = "Renewable Energy Production in 2016";
+            const string title = "Renewable Energy Production in 2016";
             Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
             DrawDivider();
 
@@ -68,14 +75,13 @@ namespace INFO_3138_Project_2___Renewable_Energy
         {
 
             string country = "";
-
             try
             {
 
                 XmlNode root = doc.DocumentElement;
                 XmlElement rootElement = (XmlElement)root;
                 XmlNodeList allCountries = rootElement.SelectNodes("//country");
-                var countryCount = allCountries.Count;
+                int countryCount = allCountries.Count;
 
                 if (countryCount > 0)
                 {
@@ -96,13 +102,13 @@ namespace INFO_3138_Project_2___Renewable_Energy
                     Console.WriteLine("Select a country by number:");
                     Console.Write("\n  > ");
 
-                    var userInput = Console.ReadLine();
+                    string userInput = Console.ReadLine();
 
                     validInput = int.TryParse(userInput, out selection);
 
                 } while (!validInput || !(selection > 0 && selection <= countryCount));
 
-                var xmlAttributeCollection = allCountries[selection - 1].Attributes;
+                XmlAttributeCollection xmlAttributeCollection = allCountries[selection - 1].Attributes;
                 if (xmlAttributeCollection != null)
                     country = xmlAttributeCollection[0].InnerText;
             }//try
@@ -148,12 +154,12 @@ namespace INFO_3138_Project_2___Renewable_Energy
                     map.Add(2, "n/a");
                     map.Add(3, "n/a");
 
-                    for (var j = 0; j < renewables[i].Attributes.Count; j++)
+                    for (int j = 0; j < renewables[i].Attributes.Count; j++)
                     {
                         map[j] = renewables[i].Attributes[j].InnerText;
                     }
 
-                    if (int.TryParse(map[1], out var tmp))
+                    if (int.TryParse(map[1], out int tmp))
                     {
                         map[1] = tmp.ToString("N0");
                     }
@@ -188,7 +194,6 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 XmlNodeList types = rootElement.SelectNodes("//country[1]/renewable/@type");
                 XmlNodeList allCountries = rootElement.SelectNodes("//country");
 
-                string userInput;
                 int selection;
                 bool validInput;
 
@@ -203,7 +208,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                     Console.Write("\n  > ");
 
-                    userInput = Console.ReadLine();
+                    string userInput = Console.ReadLine();
                     validInput = int.TryParse(userInput, out selection);
 
                 } while (!validInput || !(selection > 0 && selection <= types.Count));
@@ -233,21 +238,21 @@ namespace INFO_3138_Project_2___Renewable_Energy
                         switch (selectedRenewables[i].Attributes[j].Name)
                         {
                             case "amount":
-                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpAmount))
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out double tmpAmount))
                                 {
                                     attrList[0] = tmpAmount.ToString("#,0.##");
                                 }
                                 break;
 
                             case "percent-of-all":
-                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfAll))
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out double tmpOfAll))
                                 {
                                     attrList[1] = tmpOfAll.ToString("#,0.##");
                                 }
                                 break;
 
                             case "percent-of-renewables":
-                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfRenew))
+                                if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out double tmpOfRenew))
                                 {
                                     attrList[2] = tmpOfRenew.ToString("#,0.##");
                                 }
@@ -255,7 +260,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
                         }
                     }
 
-                    foreach (var attr in attrList)
+                    foreach (string attr in attrList)
                     {
                         Console.Write(attr.PadLeft(padding));
                     }
@@ -276,8 +281,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
             {
                 Console.WriteLine($"GENERAL ERROR: {ex.Message}");
             }
-        }//reportOnEnergyType
-
+        }
 
         /// <summary>
         /// Reports based on percentage of renewable energy.
@@ -285,24 +289,22 @@ namespace INFO_3138_Project_2___Renewable_Energy
         /// <param name="doc">The document.</param>
         public static void ReportOnPercent(XmlDocument doc)
         {
-
             const double MIN_PERCENT = 0.0, MAX_PERCENT = 100;
             double userMin = 0.0, userMax = 0.0;
-            bool isValid = false;
-
+            bool isValid = false, isLimited = true;
 
             do
             {
                 Console.Write("\nEnter the minimum % of renewable produced or press enter for no minimum: > ");
-                var tmpStr = Console.ReadLine();
+                string tmpStr = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(tmpStr))
                 {
-                    userMin = 0.0;
+                    userMin = MIN_PERCENT;
                 }
                 else
                 {
-                    if ((double.TryParse(tmpStr, out var tmpDblResult)) && tmpDblResult >= 0.0 )
+                    if ((double.TryParse(tmpStr, out double tmpDblResult)) && tmpDblResult >= MIN_PERCENT)
                     {
                         userMin = tmpDblResult;
                     }
@@ -314,11 +316,11 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                 if (string.IsNullOrEmpty(tmpStr))
                 {
-                    userMax = 100.0;
+                    userMax = MAX_PERCENT;
                 }
                 else
                 {
-                    if ((double.TryParse(tmpStr, out var tmpDblResult)) && tmpDblResult <= 100.0)
+                    if ((double.TryParse(tmpStr, out double tmpDblResult)) && tmpDblResult <= MAX_PERCENT)
                     {
                         userMax = tmpDblResult;
                     }
@@ -334,11 +336,11 @@ namespace INFO_3138_Project_2___Renewable_Energy
             Console.WriteLine("\n");
 
             string searchType;
-            if (userMin > 0.0 && userMax == 100.0)
+            if (userMin > MIN_PERCENT && userMax.Equals(MAX_PERCENT))
             {
                 searchType = $"at least {userMin}%";
             }
-            else if (userMin == 0.0 && userMax < 100.0)
+            else if (userMin.Equals(MIN_PERCENT) && userMax < MAX_PERCENT)
             {
                 searchType = $"up to {userMax}%";
             }
@@ -347,24 +349,77 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 searchType = $"{userMin}% to {userMax}%";
             }
 
-            if (userMin == 0.0 && userMax == 100.0)
+            if (userMin.Equals(MIN_PERCENT) && userMax.Equals(MAX_PERCENT))
             {
+                isLimited = false;
                 Console.WriteLine("Combined Renewables for all countries");
             }
             else
             {
                 Console.WriteLine($"Countries where renewables account for {searchType} of energy production");
             }
-            DrawDivider();
 
+            Console.WriteLine();
+            const int padding = 32;
+            Console.Write("Country".PadLeft(padding));
+            Console.Write("All Energy (Gwh)".PadLeft(padding));
+            Console.Write("Renewable (Gwh)".PadLeft(padding));
+            Console.Write("% Renewable\n".PadLeft(padding));
+            DrawDivider();
             try
             {
+                XmlElement rootElement = (XmlElement)doc.DocumentElement;
+                 
+                XmlNodeList selectedCountries = isLimited ? 
+                    rootElement.SelectNodes($"//country[totals/@renewable-percent <= {userMax} and totals/@renewable-percent >= {userMin}]") :
+                    rootElement.SelectNodes("//country");
 
-                //todo: report country information
+                XmlNodeList selectedTotals = isLimited ?
+                    rootElement.SelectNodes($"//country[totals/@renewable-percent <= {userMax} and totals/@renewable-percent >= {userMin}]/totals") :
+                    rootElement.SelectNodes("//country/totals");
 
 
+                for (int i = 0; i < selectedCountries.Count; i++)
+                {
+                    var attrList = new List<string> { "n/a", "n/a", "n/a" };
 
+                    Console.Write(selectedCountries[i].Attributes[0].InnerText.PadLeft(padding));
 
+                    for (int j = 0; j < selectedTotals[i].Attributes.Count; j++)
+                    {
+                        switch (selectedTotals[i].Attributes[j].Name)
+                        {
+                            case "all-sources":
+                                if (double.TryParse(selectedTotals[i].Attributes[j].InnerText, out double tmpAmount))
+                                {
+                                    attrList[0] = tmpAmount.ToString("#,0.##");
+                                }
+                                break;
+
+                            case "all-renewables":
+                                if (double.TryParse(selectedTotals[i].Attributes[j].InnerText, out double tmpOfAll))
+                                {
+                                    attrList[1] = tmpOfAll.ToString("#,0.##");
+                                }
+                                break;
+
+                            case "renewable-percent":
+                                if (double.TryParse(selectedTotals[i].Attributes[j].InnerText, out double tmpOfRenew))
+                                {
+                                    attrList[2] = tmpOfRenew.ToString("#,0.##");
+                                }
+                                break;
+                        }
+                    }
+
+                    foreach (string attr in attrList)
+                    {
+                        Console.Write(attr.PadLeft(padding));
+                    }
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine($"\n{selectedTotals.Count} match(es) found\n\n");
             }
             catch (XmlException ex)
             {
@@ -378,11 +433,6 @@ namespace INFO_3138_Project_2___Renewable_Energy
             {
                 Console.WriteLine($"GENERAL ERROR: {ex.Message}");
             }
-
-
-
-
-
         }
     }
 }

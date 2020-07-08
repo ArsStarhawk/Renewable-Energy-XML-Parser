@@ -5,13 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
+/*
+ * Author:  James Kidd
+ * Date:    July 8, 2020
+ * Purpose: Main execution client for renewable energy reporting application.
+ */
+
 namespace INFO_3138_Project_2___Renewable_Energy
 {
-    class Program
-    {
+    class Program {
 
         const string XML_FILE = "renewable-energy.xml";
-
 
         static void Main(string[] args)
         {
@@ -33,25 +37,31 @@ namespace INFO_3138_Project_2___Renewable_Energy
             }
 
 
-            char menuSelection = Helper.PrintMainMenu();
-            switch (menuSelection)
+            bool exit = false;
+            do
             {
-                case 'C': 
-                    Helper.ReportOnCountry(Helper.PrintCountryMenu(document), document);
-                    break;
+                char menuSelection = Helper.PrintMainMenu();
+                switch (menuSelection)
+                {
+                    case 'C':
+                        Helper.ReportOnCountry(Helper.PrintCountryMenu(document), document);
+                        break;
 
-                case 'R':
-                    Helper.ReportOnEnergyType(document);
-                    break;
+                    case 'R':
+                        Helper.ReportOnEnergyType(document);
+                        break;
 
-                case 'P':
-                    Helper.ReportOnPercent(document);
-                    break;
+                    case 'P':
+                        Helper.ReportOnPercent(document);
+                        break;
 
-                case 'X':
-                    //todo: break out (yet to be added) program run loop
-                break;
-            }
+                    case 'X':
+                        exit = true;
+                        break;
+                } 
+            } while (!exit);
+
+
         }
     }
 }
