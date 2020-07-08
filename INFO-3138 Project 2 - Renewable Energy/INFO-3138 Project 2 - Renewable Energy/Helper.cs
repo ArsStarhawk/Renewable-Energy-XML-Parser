@@ -175,13 +175,96 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
             XmlElement rootElement = (XmlElement)doc.DocumentElement;
             XmlNodeList types = rootElement.SelectNodes("//country[1]/renewable/@type");
+            XmlNodeList allCountries = rootElement.SelectNodes("//country");
 
-            Console.WriteLine("\n\nSelect a renewable by number as shown below...\n");
+            string userInput;
+            int selection;
+            bool validInput;
 
-            for (int i = 0; i < types.Count; i++)
+            do
             {
-                Console.WriteLine($"{i+1}. {types[i].InnerText}");
+                Console.WriteLine("\n\nSelect a renewable by number as shown below...\n");
+
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {types[i].InnerText}");
+                }
+
+                Console.Write("\n  > ");
+
+                userInput = Console.ReadLine();
+                validInput = int.TryParse(userInput, out selection);
+
+            } while (!validInput || !(selection > 0 && selection <= types.Count));
+
+
+            string selectedType = types[selection - 1].InnerText;
+            XmlNodeList selectedRenewables = rootElement.SelectNodes($"//country/renewable[contains(@type, '{selectedType}')]");
+
+
+            int padding = 32;
+            string title = $"{char.ToUpper(selectedType[0]) + selectedType.Substring(1)} Energy Production\n\n\n";
+            Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
+            Console.Write("Country".PadLeft(padding));
+            Console.Write("Amount (Gwh)".PadLeft(padding));
+            Console.Write("% of Total".PadLeft(padding));
+            Console.Write("% of Renewables\n".PadLeft(padding));
+            DrawDivider();
+            Console.WriteLine();
+
+            for (int i = 0; i < selectedRenewables.Count; i++)
+            {
+
+                var attrList = new List<string> {"n/a", "n/a", "n/a"};
+
+                Console.Write(allCountries[i].Attributes[0].InnerText.PadLeft(padding));
+
+                for (int j = 0; j < selectedRenewables[i].Attributes.Count; j++)
+                {
+                    switch (selectedRenewables[i].Attributes[j].Name)
+                    {
+                        case "amount":
+                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpAmount))
+                            {
+                                attrList[0] = tmpAmount.ToString("#,0.##");
+                            }
+                            break;
+
+                        case "percent-of-all":
+                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfAll))
+                            {
+                                attrList[1] = tmpOfAll.ToString("#,0.##");
+                            }
+                            break;
+
+                        case "percent-of-renewables":
+                            if (double.TryParse(selectedRenewables[i].Attributes[j].InnerText, out var tmpOfRenew))
+                            {
+                                attrList[2] = tmpOfRenew.ToString("#,0.##");
+                            }
+                            break;
+                    }
+                }
+
+                foreach (var attr in attrList)
+                {
+                    Console.Write(attr.PadLeft(padding)); 
+                }
+
+                Console.WriteLine();
             }
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }
