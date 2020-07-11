@@ -22,7 +22,6 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
             // Create and populate the DOM
             XmlDocument document = new XmlDocument();
-
             try
             {
                 document.Load(XML_FILE);
@@ -36,7 +35,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 Console.WriteLine($"GENERAL ERROR: {ex.Message}");
             }
 
-
+            //user input loop
             bool exit = false;
             do
             {
@@ -60,8 +59,6 @@ namespace INFO_3138_Project_2___Renewable_Energy
                         break;
                 } 
             } while (!exit);
-
-
         }
     }
 }

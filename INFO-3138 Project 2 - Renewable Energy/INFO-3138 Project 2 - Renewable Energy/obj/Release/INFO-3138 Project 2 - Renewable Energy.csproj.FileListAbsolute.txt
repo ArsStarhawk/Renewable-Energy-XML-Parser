@@ -1,0 +1,7 @@
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\bin\Release\INFO-3138 Project 2 - Renewable Energy.exe.config
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\bin\Release\INFO-3138 Project 2 - Renewable Energy.exe
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\bin\Release\INFO-3138 Project 2 - Renewable Energy.pdb
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\obj\Release\INFO-3138 Project 2 - Renewable Energy.csprojAssemblyReference.cache
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\obj\Release\INFO-3138 Project 2 - Renewable Energy.csproj.CoreCompileInputs.cache
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\obj\Release\INFO-3138 Project 2 - Renewable Energy.exe
+C:\Users\garli\source\repos\Renewable-Energy-XML-Parser\INFO-3138 Project 2 - Renewable Energy\INFO-3138 Project 2 - Renewable Energy\obj\Release\INFO-3138 Project 2 - Renewable Energy.pdb

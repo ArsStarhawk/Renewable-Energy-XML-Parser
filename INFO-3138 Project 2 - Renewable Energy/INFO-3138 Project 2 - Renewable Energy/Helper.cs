@@ -13,8 +13,13 @@ using System.Xml.XPath;
 
 namespace INFO_3138_Project_2___Renewable_Energy
 {
+
+    
     abstract class Helper
     {
+        const int MAX_WIDTH = 80;
+
+
         /// <summary>
         /// Prints the main menu.
         /// </summary>
@@ -25,7 +30,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
         {
             Console.WriteLine("\n\n");
             const string title = "Renewable Energy Production in 2016";
-            Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
+            Console.WriteLine(title.PadLeft((MAX_WIDTH - 2) / 2 + title.Length / 2)); //center title across 80 chars
             DrawDivider();
 
             string userInput;
@@ -57,7 +62,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
         private static void DrawDivider()
         {
             Console.Write("+");
-            for (int i = 0; i <= Console.WindowWidth - 3; i++)
+            for (int i = 0; i <= MAX_WIDTH-2; i++)
             {
                 Console.Write("=");
             }
@@ -75,8 +80,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
         {
 
             string country = "";
-            try
-            {
+            try {
 
                 XmlNode root = doc.DocumentElement;
                 XmlElement rootElement = (XmlElement)root;
@@ -88,9 +92,10 @@ namespace INFO_3138_Project_2___Renewable_Energy
                     Console.WriteLine("\n\n");
                     for (int i = 0; i < allCountries.Count; i++)
                     {
+                        //print name attribute for every country
                         Console.Write($"\t{i + 1}.  {allCountries[i].Attributes[0].InnerText,-32}");
 
-                        if ((i + 1) % 3 == 0)
+                        if ((i + 1) % 2 == 0)
                             Console.WriteLine();
                     }
                 }
@@ -99,7 +104,7 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 int selection;
                 do
                 {
-                    Console.WriteLine("Select a country by number:");
+                    Console.WriteLine("\nSelect a country by number:");
                     Console.Write("\n  > ");
 
                     string userInput = Console.ReadLine();
@@ -148,6 +153,8 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                 for (int i = 0; i < renewables.Count; i++)
                 {
+
+
                     var map = new Dictionary<int, string>();
                     map.Add(0, "n/a");
                     map.Add(1, "n/a");
@@ -216,9 +223,10 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 string selectedType = types[selection - 1].InnerText;
                 XmlNodeList selectedRenewables = rootElement.SelectNodes($"//country/renewable[contains(@type, '{selectedType}')]");
 
-                int padding = 32;
-                string title = $"{char.ToUpper(selectedType[0]) + selectedType.Substring(1)} Energy Production\n\n\n";
-                Console.WriteLine(title.PadLeft((Console.WindowWidth - 2) / 2 + title.Length / 2));
+                int maxCountryLength = 20;
+                int padding = 20;
+                string title = $"{char.ToUpper(selectedType[0]) + selectedType.Substring(1)} Energy Production\n";
+                Console.WriteLine(title.PadLeft((MAX_WIDTH - 2) / 2 + title.Length / 2));
                 Console.Write("Country".PadLeft(padding));
                 Console.Write("Amount (Gwh)".PadLeft(padding));
                 Console.Write("% of Total".PadLeft(padding));
@@ -228,10 +236,13 @@ namespace INFO_3138_Project_2___Renewable_Energy
 
                 for (int i = 0; i < selectedRenewables.Count; i++)
                 {
-
                     var attrList = new List<string> { "n/a", "n/a", "n/a" };
+                    var currentCountry = allCountries[i].Attributes[0].InnerText;
 
-                    Console.Write(allCountries[i].Attributes[0].InnerText.PadLeft(padding));
+                    Console.Write((currentCountry.Length > maxCountryLength
+                        ? currentCountry.PadLeft(padding).Remove(0, currentCountry.Length - maxCountryLength)
+                        : currentCountry.PadLeft(padding)));
+
 
                     for (int j = 0; j < selectedRenewables[i].Attributes.Count; j++)
                     {
@@ -360,14 +371,16 @@ namespace INFO_3138_Project_2___Renewable_Energy
             }
 
             Console.WriteLine();
-            const int padding = 32;
+            const int padding = 20;
             Console.Write("Country".PadLeft(padding));
             Console.Write("All Energy (Gwh)".PadLeft(padding));
             Console.Write("Renewable (Gwh)".PadLeft(padding));
             Console.Write("% Renewable\n".PadLeft(padding));
             DrawDivider();
+
             try
             {
+                int maxCountryLength = 20;
                 XmlElement rootElement = (XmlElement)doc.DocumentElement;
                  
                 XmlNodeList selectedCountries = isLimited ? 
@@ -383,7 +396,12 @@ namespace INFO_3138_Project_2___Renewable_Energy
                 {
                     var attrList = new List<string> { "n/a", "n/a", "n/a" };
 
-                    Console.Write(selectedCountries[i].Attributes[0].InnerText.PadLeft(padding));
+                    var currentCountry = selectedCountries[i].Attributes[0].InnerText;
+
+
+                    Console.Write((currentCountry.Length > maxCountryLength
+                        ? currentCountry.PadLeft(padding).Remove(0, currentCountry.Length - maxCountryLength)
+                        : currentCountry.PadLeft(padding)));
 
                     for (int j = 0; j < selectedTotals[i].Attributes.Count; j++)
                     {
